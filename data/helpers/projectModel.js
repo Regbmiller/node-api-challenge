@@ -14,15 +14,12 @@ function get(id) {
 
   if (id) {
     query.where("p.id", id).first();
-
+    
     const promises = [query, getProjectActions(id)]; // [ projects, actions ]
-
     return Promise.all(promises).then(function(results) {
-      let [project, actions] = results;
-
+     let [project, actions] = results;
       if (project) {
         project.actions = actions;
-
         return mappers.projectToBody(project);
       } else {
         return null;

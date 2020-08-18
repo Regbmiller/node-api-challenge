@@ -2,6 +2,7 @@ const express = require('express');
 const projectRouter = express.Router();
 
 const db = require('../data/helpers/projectModel');
+const dbActions = require('../data/helpers/actionModel');
 const validateProject = require('../middleware/ProjectsMiddleWare');
 const validateProjectId = require('../middleware/ProjectsMiddleWare');
 
@@ -25,7 +26,13 @@ projectRouter.get('/:id/actions', validateProjectId, (req, res) => {
     .catch((err) => console.log(err));
 });
 
-projectRouter.post('/', validateProject, (req, res) => {
+projectRouter.post('/:id/actions', validateProjectId, (req,res) =>{
+  dbActions.insert(req.body)
+    .then((action) => res.status(201).json({ Created: action }))
+    .catch((err) => console.log(err.message));
+});
+
+projectRouter.post('/', validateProjectId, (req, res) => {
   db.insert(req.body)
     .then((newPost) => res.status(201).json({ Created: newPost }))
     .catch((err) => console.log(err.message));
@@ -39,8 +46,7 @@ projectRouter.put('/:id', validateProjectId, (req, res) => {
 
 projectRouter.delete('/:id', validateProjectId, (req, res) => {
   db.remove(req.params.id)
-    .then((deletedId) => {
-      res.status(200).json({ Deleted_user_of_id: req.params.id });
+    .then((deletedId) => {res.status(200).json({ Deleted_user_of_id: req.params.id });
     })
     .catch((err) => console.log(err.message));
 });
